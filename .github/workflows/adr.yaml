@@ -48,43 +48,42 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: 'adr',
-              color: '#1D76DB'
+              color: '1D76DB'
             })
             
             github.rest.issues.createLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: 'adr:draft',
-              color: '#FBCA04'
+              color: 'FBCA04'
             })
             
             github.rest.issues.createLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: 'adr:approved',
-              color: '#0E8A16'
+              color: '0E8A16'
             })
             
             github.rest.issues.createLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: 'adr:rejected',
-              color: '#B60205',
-              color: ''
+              color: #B60205'
             })
             
             github.rest.issues.createLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: 'adr:deprecated',
-              color: '#F9D0C4'
+              color: 'F9D0C4'
             })
             
             github.rest.issues.createLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: 'adr:superceded',
-              color: '#FEF2C0'
+              color: 'FEF2C0'
             })
           
   handle_issue:
