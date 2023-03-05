@@ -44,7 +44,7 @@ jobs:
             // On init we need to setup the repo to support the MADR process
             // This includes:
             //   - create labels
-            async function() {
+            async () => {
               const labels = await github.rest.issues.listLabelsForRepo({
                 owner: context.repo.owner,
                 repo: context.repo.repo
