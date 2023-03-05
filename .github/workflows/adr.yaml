@@ -128,7 +128,6 @@ jobs:
           ].join('\n')
           
           console.log('Create the first comment', tplLog)
-          for (let i in github.rest.issues) console.log(i)
           github.rest.issues.createComment({
             owner: context.repo.owner,
             repo: context.repo.repo,
