@@ -153,17 +153,105 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
-          const validUsername = /^@[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
-          
-          const requestApprovalRegex = new Regexp(
-          
-          let comment = context.event?.comment?.body || ''
-          
-          // Strip prefix and trim
-          comment = comment.replace(/^adr (.*)/, '$1').trim()
-          
+          const statePending = 'pending'
+          const stateAccepted = 'accepted'
+          const stateRejected = 'rejected'
+          const stateDeprecated = 'deprecated'
+          const stateSuperseded = 'superseded'
+
+          const cmdRequestApproval = 'request-approval'
+          const cmdApprove = 'approve'
+          const cmdReject = 'reject'
+
+          const validUsername = '@[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}'
+
+          const ghComment = (...msg) => {
+            github.rest.issues.createComment({
+              repo: context.repo.repo,
+              owner: context.repo.owner,
+              issue_number: context.issue.number,
+              body: body.join('\n')
+            })
+          }
+
+          const fmtMessage = (...p) => p.map(a => typeof a == 'string'  && a || '').join('/n')
+          const errComment = (summary, ...detail) => fmtMessage(
+            `<details><summary>❗ @${github.actor} ${summary}</summary>`,
+            ...detail,
+            `</details>`,
+          )
+
+          const findStatusComment = async () => {
+            console.log('Finding status comment')
+            const comments = await github.rest.issues.listComments({
+              repo: context.repo.repo,
+              owner: context.repo.owner,
+              issue_number: context.issue.number,
+              per_page: 100, // max
+            })
+            console.log(comments)
+
+            return comments.data.find(c =>
+              c.user.login == 'github-actions[bot]' &&
+              c.body.startsWith('<detail><summary>ℹ️ ADR Status')
+            )
+          }
+
+          const updateStatus = async (status) => {
+            console.log('Updating status comment')
+            const comment = await findStatusComment()
+            if (!comment) {
+              console.log('No status comment found')
+              return
+            }
+
+            let head, body, footer
+            [head, body] = comment.body.split('</summary>')[1]
+            [body, footer] = body.split('</details>')[0]
+            body = body.split('```')[1]
+
+            const [deciders, approvals, rejections, status] = body.split('\n')
+
+          }
+
+          const comment = (context.event?.comment?.body || '').replace(/^adr (.*)/, '$1').trim()
           // Bail if comment is empty
           if (commment === '') return
-          
-          if (comment.match(/^request approval( $valid*/)
+
+          // Request approval flow
+          const requestApproval = comment.match(new Regexp(`^request approval(( ${validUsername})*)$`, 'i'))
+          if (requestApproval) {
+            usernames = requestApproval[1].trim().split(' ')
+
+            if (usernames.length === 0) return ghComment(errComment(
+              'Please specify at least one user to request approval from.',
+              'Example: \`adr request approval @user1 @user2\`',
+            ))
+
+            ghComment(fmtMessage(
+              `@${usernames.join(' ')} Please review this ADR.`,
+              '',
+              '---',
+              '',
+              '- 👍 To **approve** this ADR, comment:',
+              '  -`adr approve`',
+              '- 👎 To **reject** this ADR, comment:',
+              '  -`adr reject`',
+            ))
+          }
+
+          // Approve flow
+          const approve = comment.match(/^approve$/i)
+          if (approve) {
+            // Do something
+
+            return
+          }
+
+          // Reject flow
+          const reject = comment.match(/^reject$/i)
+          if (reject) {
+
+            return
+          }
   
