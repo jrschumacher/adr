@@ -117,7 +117,7 @@ jobs:
           if (!context.payload.issue.labels.find(({ name }) => name === 'adr')) return
           
           const tplLog = ```
-            ℹ️ _This issue is used to keep track of the events related to this ADR_
+            _This issue is used to keep track of the events related to this ADR_
             ---
             \`\`\`
             deciders:
