@@ -96,7 +96,7 @@ jobs:
                 name: 'adr:superceded',
                 color: 'FEF2C0'
               })
-            })()
+            }()
 
   handle_issue:
     runs-on: ubuntu-latest
