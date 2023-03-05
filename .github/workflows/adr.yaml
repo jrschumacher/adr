@@ -98,7 +98,7 @@ jobs:
     if: ${{ github.event_name == 'issue_comment' }}
     steps:
     - name: Handle Request Approval
-      if: ${{ github.event.action == 'created' && startsWith(github.event.comment.body, 'adr') }
+      if: ${{ github.event.action == 'created' && startsWith(github.event.comment.body, 'adr') }}
       uses: actions/github-script@v6
       with:
         script: |
