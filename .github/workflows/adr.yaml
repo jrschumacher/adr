@@ -44,59 +44,57 @@ jobs:
             // On init we need to setup the repo to support the MADR process
             // This includes:
             //   - create labels
-            async () => {
-              const labels = await github.rest.issues.listLabelsForRepo({
-                owner: context.repo.owner,
-                repo: context.repo.repo
-              })
+            const labels = await github.rest.issues.listLabelsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
 
-              console.log(labels)
-              return
-
+            console.log(labels)
+            return
 
 
-              github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'adr',
-                color: '1D76DB'
-              })
 
-              github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'adr:draft',
-                color: 'FBCA04'
-              })
+            github.rest.issues.createLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'adr',
+              color: '1D76DB'
+            })
 
-              github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'adr:approved',
-                color: '0E8A16'
-              })
+            github.rest.issues.createLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'adr:draft',
+              color: 'FBCA04'
+            })
 
-              github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'adr:rejected',
-                color: 'B60205'
-              })
+            github.rest.issues.createLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'adr:approved',
+              color: '0E8A16'
+            })
 
-              github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'adr:deprecated',
-                color: 'F9D0C4'
-              })
+            github.rest.issues.createLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'adr:rejected',
+              color: 'B60205'
+            })
 
-              github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'adr:superceded',
-                color: 'FEF2C0'
-              })
-            }()
+            github.rest.issues.createLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'adr:deprecated',
+              color: 'F9D0C4'
+            })
+
+            github.rest.issues.createLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'adr:superceded',
+              color: 'FEF2C0'
+            })
 
   handle_issue:
     runs-on: ubuntu-latest
