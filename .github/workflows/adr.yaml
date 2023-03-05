@@ -118,7 +118,6 @@ jobs:
           
           const tplLog = [
             '<detail><summary>ℹ️ ADR Status: draft</summary>',
-            _This comment is used to keep track of the events related to this ADR_
             '```',
             'deciders:',
             'approvals:',
@@ -126,6 +125,10 @@ jobs:
             'status: draft',
             '```',
             '</detail>',
+            '',
+            '---',
+            '',
+            '_This comment is used to keep track of the events related to this ADR_'
           ].join('\n')
           
           console.log('Create the first comment', tplLog)
