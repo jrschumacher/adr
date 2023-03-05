@@ -86,7 +86,7 @@ jobs:
             let foundLabels = 0
             let createdLabels = 0
             console.log('Checking if labels need to be created...')
-            const needLabels = labels.forEach(({ name, description, color }) => {
+            const needLabels = labels.forEach(async ({ name, description, color }) => {
               const found = listLabels?.data?.find(label => label.name === name)
               
               if (found) {
