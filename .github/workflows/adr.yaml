@@ -44,13 +44,22 @@ jobs:
             // On init we need to setup the repo to support the MADR process
             // This includes:
             //   - create labels
-            err = github.rest.issues.createLabel({
+            const labels = github.rest.issues.listLabelsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
+            
+            console.log(labels)
+            return
+            
+            
+            
+            github.rest.issues.createLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: 'adr',
               color: '1D76DB'
             })
-            console.error(err)
             
             github.rest.issues.createLabel({
               owner: context.repo.owner,
