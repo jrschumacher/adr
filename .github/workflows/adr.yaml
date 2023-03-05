@@ -70,7 +70,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: 'adr:rejected',
-              color: #B60205'
+              color: 'B60205'
             })
             
             github.rest.issues.createLabel({
