@@ -117,16 +117,14 @@ jobs:
           if (!context.payload.issue.labels.find(({ name }) => name === 'adr')) return
           
           const tplLog = [
-            '_This comment is used to keep track of the events related to this ADR_',
-            '',
-            '---',
-            '',
+            '<detail><summary>ℹ️ _This comment is used to keep track of the events related to this ADR_</summary>',
             '```',
             'deciders:',
             'approvals:',
             'rejections:',
             'status: draft',
             '```',
+            '</detail>',
           ].join('\n')
           
           console.log('Create the first comment', tplLog)
