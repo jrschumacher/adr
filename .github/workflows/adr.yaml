@@ -118,7 +118,9 @@ jobs:
           
           const tplLog = [
             '_This issue is used to keep track of the events related to this ADR_',
+            '',
             '---',
+            '',
             '```',
             'deciders:',
             'approvals:',
