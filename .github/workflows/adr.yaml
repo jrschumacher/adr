@@ -94,12 +94,12 @@ jobs:
               }
               
               console.log(`Label ${name} was not found. Creating...`)
+              createdLabels++
               await github.rest.issues.createLabel({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 name, description, color
               })
-              createdLabels++
             })
             console.log(`Labels found: ${foundLabels} and created: ${createdLabels}`)
 
