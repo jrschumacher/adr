@@ -8,8 +8,7 @@ on:
         required: true
         default: 'warning'
         type: choice
-        options:
-        - init
+        options: [init]
   issue_comment: 
     types: [created]
   issues:
@@ -20,7 +19,7 @@ jobs:
   ## Runs when workflow dispatch is triggered
   handle_command:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == "workflow_dispatch" }}
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Init Command
         if: ${{ inputs.command == "init" }}
