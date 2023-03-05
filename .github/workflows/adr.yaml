@@ -116,16 +116,16 @@ jobs:
           console.log('Make sure the issue is an adr')
           if (!context.payload.issue.labels.find(({ name }) => name === 'adr')) return
           
-          const tplLog = ```
-            _This issue is used to keep track of the events related to this ADR_
-            ---
-            \`\`\`
-            deciders:
-            approvals:
-            rejections:
-            status: draft
-            \`\`\`
-          ```
+          const tplLog = [
+            '_This issue is used to keep track of the events related to this ADR_',
+            '---',
+            '```',
+            'deciders:',
+            'approvals:',
+            'rejections:',
+            'status: draft',
+            '```',
+          ].join('\n')
           
           console.log('Create the first comment', tplLog)
           for (let i in github.rest.issues) console.log(i)
