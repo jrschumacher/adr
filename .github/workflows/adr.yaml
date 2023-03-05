@@ -105,7 +105,7 @@ jobs:
 
   handle_issue:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'issue' }}
+    if: ${{ github.event_name == 'issues' }}
     steps:
     - name: Handle New Issue
       if: ${{ github.event.action == 'opened' }}
