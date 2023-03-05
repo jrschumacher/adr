@@ -163,6 +163,8 @@ jobs:
           const cmdApprove = 'approve'
           const cmdReject = 'reject'
 
+          const tplHeader = status => `<details><summary>ℹ️ ADR Status: ${status}</summary>`
+
           const validUsername = '@[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}'
 
           const ghComment = (...msg) => {
@@ -197,7 +199,7 @@ jobs:
             )
           }
 
-          const updateStatus = async (status) => {
+          const updateStatus = async (status, params) => {
             console.log('Updating status comment')
             const comment = await findStatusComment()
             if (!comment) {
@@ -205,13 +207,67 @@ jobs:
               return
             }
 
-            let head, body, footer
-            [head, body] = comment.body.split('</summary>')[1]
+            let body, footer
+            [, body] = comment.body.split('</summary>')[1]
             [body, footer] = body.split('</details>')[0]
             body = body.split('```')[1]
 
             const [deciders, approvals, rejections, status] = body.split('\n')
+            const currDeciders = deciders.split(':')[1].trim()
+            const currApprovals = approvals.split(':')[1].trim()
+            const currRejections = rejections.split(':')[1].trim()
+            const currStatus = status.split(':')[1].trim()
 
+            let nextDeciders = currDeciders
+            let nextApprovals = currApprovals
+            let nextRejections = currRejections
+            let nextStatus = currStatus
+
+            switch (status) {
+              case statePending:
+                const currDeciders = new Set(deciders.split(' '))
+                if (Array.isArray(params.decider)) {
+                  params.deciders.map(decider => currDeciders.add(decider))
+                  nextDeciders = Array.from(currDeciders).join(' ')
+                }
+                break
+              case stateAccepted:
+                const currApprovals = new Set(approvals.split(' '))
+                if (Array.isArray(params.approver)) {
+                  params.approver.map(approver => currApprovals.add(approver))
+                  nextApprovals = Array.from(currApprovals).join(' ')
+                }
+                break
+              case stateRejected:
+                const currRejections = new Set(rejections.split(' '))
+                if (Array.isArray(params.rejector)) {
+                  params.rejector.map(rejector => currRejections.add(rejector))
+                  nextRejections = Array.from(currRejections).join(' ')
+                }
+                break
+            }
+
+            if (approvals.length == deciders.length) {
+              nextStatus = stateAccepted
+            } else if (rejections.length == deciders.length) {
+              nextStatus = stateRejected
+            } else {
+              nextStatus = statePending
+            }
+
+            return github.rest.issues.updateComment({
+              repo: context.repo.repo,
+              owner: context.repo.owner,
+              comment_id: comment.id,
+              body: fmtMessage(
+                tplHeader(nextStatus),
+                `Deciders: ${nextDeciders}`,
+                `Approvals: ${nextApprovals}`,
+                `Rejections: ${nextRejections}`,
+                `Status: ${nextStatus}`,
+                `</details>`,
+              )
+            })
           }
 
           const comment = (context.event?.comment?.body || '').replace(/^adr (.*)/, '$1').trim()
@@ -227,6 +283,8 @@ jobs:
               'Please specify at least one user to request approval from.',
               'Example: \`adr request approval @user1 @user2\`',
             ))
+
+            updateStatus(statePending, {deciders: usernames})
 
             ghComment(fmtMessage(
               `@${usernames.join(' ')} Please review this ADR.`,
@@ -254,4 +312,3 @@ jobs:
 
             return
           }
-  
