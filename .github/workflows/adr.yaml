@@ -1,0 +1,117 @@
+name: ADR
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: 'Choose command to run'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - init
+  issue_comment:
+    - created
+    
+jobs:
+  ## Handle Command Job
+  ## Runs when workflow dispatch is triggered
+  handle_command:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == "workflow_dispatch" }}
+    steps:
+      - name: Init Command
+        if: ${{ inputs.command == "init" }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // On init we need to setup the repo to support the MADR process
+            // This includes:
+            //   - create labels
+            github.rest.issues.createLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'adr',
+              color: '#1D76DB'
+            })
+            
+            github.rest.issues.createLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'adr:draft',
+              color: '#FBCA04'
+            })
+            
+            github.rest.issues.createLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'adr:approved',
+              color: '#0E8A16'
+            })
+            
+            github.rest.issues.createLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'adr:rejected',
+              color: '#B60205',
+              color: ''
+            })
+            
+            github.rest.issues.createLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'adr:deprecated',
+              color: '#F9D0C4'
+            })
+            
+            github.rest.issues.createLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'adr:superceded',
+              color: '#FEF2C0'
+            })
+          
+  handle_issue:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == "issue" && github.event. }}
+    steps:
+    - name: Handle New Issue
+      if: ${{ github.event.action == "opened" }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          // On a new issue we want to add the first comment so we can keep track of approvals
+          // and rejections without having to re
+          github.rest.issues.createComment({
+            repo: context.repo.repo,
+            owner: context.repo.owner,
+            issue_number: context.issue.number,
+            body: 'ℹ️ _This issue is used to keep track of the events related to this ADR_'
+          })
+            
+    
+  ## Handle Comment Job
+  # Runs when a comment is added
+  handle_comment-request_approval:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == "issue_comment" }}
+    steps:
+    - name: Handle Request Approval
+      if: ${{ github.event.action == "created" && startsWith(github.event.comment.body, "adr ") }
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const validUsername = /^@[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
+          
+          const requestApprovalRegex = new Regexp(
+          
+          let comment = context.event?.comment?.body || ''
+          
+          // Strip prefix and trim
+          comment = comment.replace(/^adr (.*)/, '$1').trim()
+          
+          // Bail if comment is empty
+          if (commment === '') return
+          
+          if (comment.match(/^request approval( $valid*/)
+  
