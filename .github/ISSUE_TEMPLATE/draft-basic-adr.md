@@ -2,7 +2,7 @@
 name: Draft basic ADR
 about: Draft a basic ADR
 title: "[ADR] Summary"
-labels: adr, draft
+labels: adr, adr:draft
 assignees: ''
 
 ---
