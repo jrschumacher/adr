@@ -114,7 +114,8 @@ jobs:
         script: |
           // On a new issue we want to add the first comment so we can keep track of events
           console.log('Make sure the issue is an adr')
-          if (!context.event.issue.labels.find(({ name }) => name === 'adr')) return
+          console.log(context.payload)
+          if (!context.payload.labels.find(({ name }) => name === 'adr')) return
           
           console.log('Create the first comment')
           github.rest.issues.createComment({
