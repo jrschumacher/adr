@@ -44,56 +44,52 @@ jobs:
             // On init we need to setup the repo to support the MADR process
             // This includes:
             //   - create labels
-            const labels = await github.rest.issues.listLabelsForRepo({
+            const labels = [
+              {
+                name: 'adr',
+                description: 'Main ADR label',
+                color: '1D76DB'
+              },
+              {
+                name: 'adr:draft', 
+                description: 'ADR in draft mode',
+                color: 'FBCA04'
+              },
+              {
+                name: 'adr:approved', 
+                description: 'ADR has been approved',
+                color: '0E8A16'
+              },
+              {
+                name: 'adr:rejected', 
+                description: 'ADR has been rejected',
+                color: 'B60205'
+              },
+              {
+                name: 'adr:deprecated', 
+                description: 'ADR has been deprecated',
+                color: 'F9D0C4'
+              },
+              {
+                name: 'adr:superceded', 
+                description: 'ADR has been superceded',
+                color: 'FEF2C0'
+              },
+            ]
+            
+            const listLabels = await github.rest.issues.listLabelsForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo
             })
+            
+            const needLabels = labels.forEach(({ name, description, color }) => {
+              const found = listLabels?.data?.find(label => label.name === name)
 
-            console.log(labels)
-            return
-
-
-
-            github.rest.issues.createLabel({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'adr',
-              color: '1D76DB'
-            })
-
-            github.rest.issues.createLabel({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'adr:draft',
-              color: 'FBCA04'
-            })
-
-            github.rest.issues.createLabel({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'adr:approved',
-              color: '0E8A16'
-            })
-
-            github.rest.issues.createLabel({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'adr:rejected',
-              color: 'B60205'
-            })
-
-            github.rest.issues.createLabel({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'adr:deprecated',
-              color: 'F9D0C4'
-            })
-
-            github.rest.issues.createLabel({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'adr:superceded',
-              color: 'FEF2C0'
+              !found && github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name, description, color
+              })
             })
 
   handle_issue:
