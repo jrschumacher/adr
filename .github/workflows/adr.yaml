@@ -117,14 +117,16 @@ jobs:
           if (!context.payload.issue.labels.find(({ name }) => name === 'adr')) return
           
           const tplLog = [
-            '<detail><summary>ℹ️ ADR Status: draft</summary>',
+            '<details><summary>ℹ️ ADR Status: draft</summary>',
             '```',
+            '',
             'deciders:',
             'approvals:',
             'rejections:',
             'status: draft',
             '```',
-            '</detail>',
+            '',
+            '</details>',
             '',
             '---',
             '',
