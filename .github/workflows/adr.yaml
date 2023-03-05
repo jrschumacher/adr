@@ -77,20 +77,31 @@ jobs:
               },
             ]
             
+            console.log('Fetching existing labels...')
             const listLabels = await github.rest.issues.listLabelsForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo
             })
             
+            let foundLabels = 0
+            let createdLabels = 0
+            console.log('Checking if labels need to be created...')
             const needLabels = labels.forEach(({ name, description, color }) => {
               const found = listLabels?.data?.find(label => label.name === name)
-
-              !found && github.rest.issues.createLabel({
+              
+              if (found) {
+                return foundLabels++
+              }
+              
+              console.log(`Label ${name} was not found. Creating...`)
+              await github.rest.issues.createLabel({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 name, description, color
               })
+              createdLabels++
             })
+            console.log(`Labels found: ${foundLabels} and created: ${createdLabels}`)
 
   handle_issue:
     runs-on: ubuntu-latest
