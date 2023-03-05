@@ -116,7 +116,7 @@ jobs:
           console.log('Make sure the issue is an adr')
           if (!context.payload.issue.labels.find(({ name }) => name === 'adr')) return
           
-          const tmpLog = ```
+          const tplLog = ```
             ℹ️ _This issue is used to keep track of the events related to this ADR_
             ---
             \`\`\`
