@@ -237,7 +237,7 @@ jobs:
               throw new Error('Could not find state comment')
             }
 
-            console.log('Found state comment', comment.id)
+            console.log('Found state comment', comment.id, comment.body)
             [deciders, approvals, rejections, status] = comment.body
               .split('```')[1]
               .trim()
@@ -245,9 +245,14 @@ jobs:
               .map(l =>
                 l.split(':')[1]
                   .trim('')
-                  .split(' ')
               )
-            return { commentId: comment.id, deciders, approvals, rejections, status }
+            return {
+              commentId: comment.id,
+              deciders: deciders.split(' '),
+              approvals: approvals.split(' '),
+              rejections: rejections.split(' '),
+              status
+            }
           }
 
           async function updateStatus(status, params) {
