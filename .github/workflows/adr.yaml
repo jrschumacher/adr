@@ -220,17 +220,25 @@ jobs:
 
             console.log('Finding status comment')
             // TODO: Support pagination of the GH comments
-            comment = await github.rest.issues.listComments({
+            const comments = await github.rest.issues.listComments({
               repo: context.repo.repo,
               owner: context.repo.owner,
               issue_number: context.issue.number,
               per_page: 100, // max
-            }).data.find(c =>
+            })
+            if (!comments || !Array.isArray(comments)) {
+              console.error('Could not get issue comments', err)
+              throw new Error('Could not get issue comments')
+            }
+            
+            comment = comments.find(c =>
               c.user.login == 'github-actions[bot]' &&
               c.body.startsWith('<detail><summary>ℹ️ ADR Status')
             )
-
-            if (!comment) throw new Error('No state comment found')
+            if (!comment) {
+              console.error('Could not find state comment')
+              throw new Error('Could not find state comment')
+            }
 
             console.log('Found state comment', comment.id)
             [deciders, approvals, rejections, status] = comment.body
