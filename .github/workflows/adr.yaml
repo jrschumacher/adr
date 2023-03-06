@@ -153,7 +153,7 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
-          const statePending = 'pending'
+          const statePendingApproval = 'pending approval'
           const stateAccepted = 'accepted'
           const stateRejected = 'rejected'
           const stateDeprecated = 'deprecated'
@@ -272,7 +272,7 @@ jobs:
             switch (status) {
               case statePending:
                 const currDeciders = new Set(deciders.split(' '))
-                if (Array.isArray(params.decider)) {
+                if (Array.isArray(params.deciders)) {
                   params.deciders.map(decider => currDeciders.add(decider))
                   nextDeciders = Array.from(currDeciders).join(' ')
                   nextApprovals = params.approvals.join(' ')
