@@ -158,6 +158,7 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
+          const labelPrefix = 'adr'
           const stateDraft = 'draft'
           const statePendingApproval = 'pending-approval'
           const stateAccepted = 'accepted'
@@ -207,7 +208,7 @@ jobs:
 
           async function updateState(commentId, status, deciders, approvals, rejections) {
             console.log(`Updating state for ${commentId}`, status, deciders, approvals, rejections)
-            const statusLabel = `${cmdPrefix}:${status}`
+            const statusLabel = `${labelPrefix}:${status}`
 
             // update labels
             const existingLabels = await github.rest.issues.listLabelsOnIssue({
@@ -215,29 +216,29 @@ jobs:
               owner: context.repo.owner,
               issue_number: context.issue.number,
             })
+            
+            existingLabels = existingLabels.data.map(l => l.name)
 
             // Clean up the labels
-            if (existingLabels && Array.isArray(existingLabels.data)) {
-              const adrLabels = existingLabels.data
-                .filter(l => l.name.startsWith(`${cmdPrefix}:`))
-                .forEach(async l => {
-                  if (l.name !== statusLabel) {
-                    await github.rest.issues.removeLabel({
-                      repo: context.repo.repo,
-                      owner: context.repo.owner,
-                      issue_number: context.issue.number,
-                      name: l.name,
-                    })
-                  }
-                })
-            }
+            const adrLabels = existingLabels.data
+              .filter(l => l.name.startsWith(`${cmdPrefix}:`))
+              .forEach(async l => {
+                if (l.name !== statusLabel) {
+                  await github.rest.issues.removeLabel({
+                    repo: context.repo.repo,
+                    owner: context.repo.owner,
+                    issue_number: context.issue.number,
+                    name: l.name,
+                  })
+                }
+              })
 
             // update labels
             await github.rest.issues.addLabels({
               repo: context.repo.repo,
               owner: context.repo.owner,
               issue_number: context.issue.number,
-              labels: [statusLabel],
+              labels: [labelPrefix, statusLabel],
             })
 
             ghUpdateComment(commentId,
@@ -252,19 +253,17 @@ jobs:
               '',
               `</details>`
             )
-            
-            // Check if should commit and lock
-            if (status === stateAccepted || status === stateRejected) {
-              // TODO: Create commit
               
-              github.rest.issues.update({
-                repo: context.repo.repo,
-                owner: context.repo.owner,
-                issue_number: context.issue.number,
-                state: 'closed',
-                state_reason: `ADR has been ${status}`
-              })
-            }
+            // TODO: Create commit
+              
+            github.rest.issues.update({
+              repo: context.repo.repo,
+              owner: context.repo.owner,
+              issue_number: context.issue.number,
+              state: status === stateAccepted || status === stateRejected ? 'closed' : 'open',
+              labels: [cmdPrefix, 
+              state_reason: `ADR has been ${status}`
+            })
           }
 
           async function getState() {
