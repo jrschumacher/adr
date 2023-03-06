@@ -246,14 +246,14 @@ jobs:
                 l.split(':')[1]
                   .trim('')
               )
-              
-            [deciders, approvals, rejections, status] = state
+          
+            console.log('Extracted state', state)
             return {
               commentId: comment.id,
-              deciders: deciders.split(' '),
-              approvals: approvals.split(' '),
-              rejections: rejections.split(' '),
-              status
+              deciders: state[0].split(' '),
+              approvals: state[1].split(' '),
+              rejections: state[2].split(' '),
+              state[3]
             }
           }
 
