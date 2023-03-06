@@ -287,13 +287,15 @@ jobs:
           }
 
           // adr cmd [params]
+          console.log('Processing command', context.event?.comment?.body)
           const reCmd = new RegExp(`^${cmdPrefix} ([^ ]+)((?: [^ ]+)*)?`);
           const cmdComment = context.event?.comment?.body?.trim().match(reCmd)
           // Bail if comment is empty
-          if (!cmdComment) return
+          if (!cmdComment) return errComment('No command found')
           let [_, cmd, params] = cmdComment
           params = params?.trim().split(' ') || []
 
+          console.log(`Processing command from ${github.actor}`, cmd, params)
           switch (cmd) {
             case cmdRequestApproval:
               console.log('Requesting approval')
