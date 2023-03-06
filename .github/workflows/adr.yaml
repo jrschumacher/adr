@@ -166,8 +166,8 @@ jobs:
 
           const validUsername = '@[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}'
           
-          const commentBody = context.payload.issue_comment.comment.body
-          const commentActor = context.payload.issue_comment.comment.user.login
+          const commentBody = context.payload.comment.body
+          const commentActor = context.payload.comment.user.login
 
           const fmtMessage = (...msg) => msg.map(l => typeof l == 'string' && l || '').join('/n')
 
