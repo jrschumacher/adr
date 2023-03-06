@@ -203,10 +203,46 @@ jobs:
 
           async function updateState(commentId, status, deciders, approvals, rejections) {
             console.log(`Updating state for ${commentId}`, status, deciders, approvals, rejections)
-            
-            // TODO: update labels
-            
-            return ghUpdateComment(commentId,
+
+            // update labels
+            const existingLabels = await github.rest.issues.listLabelsOnIssue({
+              repo: context.repo.repo,
+              owner: context.repo.owner,
+              issue_number: context.issue.number,
+            })
+
+            // Clean up the labels
+            if (existingLabels && Array.isArray(existingLabels.data)) {
+              const adrLabels = existingLabels.data
+                .filter(l => l.name.startsWith(`${cmdPrefix}:`))
+                .forEach(async l => {
+                  if (l.name !== `${cmdPrefix}:${status}`) {
+                    await github.rest.issues.removeLabel({
+                      repo: context.repo.repo,
+                      owner: context.repo.owner,
+                      issue_number: context.issue.number,
+                      name: l.name,
+                    })
+
+                    await github.rest.issues.addLabel({
+                      repo: context.repo.repo,
+                      owner: context.repo.owner,
+                      issue_number: context.issue.number,
+                      labels: [l.name]
+                    })
+                  }
+                })
+            }
+
+            // update labels
+            await github.rest.issues.addLabels({
+              repo: context.repo.repo,
+              owner: context.repo.owner,
+              issue_number: context.issue.number,
+              labels: [status],
+            })
+
+            ghUpdateComment(commentId,
               `<details><summary>ℹ️ ADR Status: ${status}</summary>`,
               '',
               '```',
@@ -277,7 +313,7 @@ jobs:
               console.error('Error getting state', e)
               return
             }
-            
+
             const deciders = new Set(state.deciders)
             const approvals = new Set(state.approvals)
             const rejections = new Set(state.rejections)
@@ -313,7 +349,7 @@ jobs:
             ) {
               nextStatus = stateRejected
             }
-            
+
             await updateState(state.commentId, nextStatus, deciders, approvals, rejections)
           }
 
