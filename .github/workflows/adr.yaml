@@ -252,10 +252,10 @@ jobs:
             console.log('Extracted state', state)
             return {
               commentId: comment.id,
-              deciders: state.deciders.split(' '),
-              approvals: state.approvals.split(' '),
-              rejections: state.rejections.split(' '),
-              status: state.status
+              deciders: state?.deciders?.split(' '),
+              approvals: state?.approvals?.split(' '),
+              rejections: state?.rejections?.split(' '),
+              status: state?.status
             }
           }
 
