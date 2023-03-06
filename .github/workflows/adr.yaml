@@ -249,7 +249,7 @@ jobs:
             console.log('Updating state comment')
             let state = {};
             try {
-              state = await getState(comment.body)
+              state = await getState()
             } catch (e) {
               console.error('Error getting state', e)
               return
