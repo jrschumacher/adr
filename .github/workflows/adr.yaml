@@ -224,7 +224,7 @@ jobs:
                       name: l.name,
                     })
 
-                    await github.rest.issues.addLabel({
+                    await github.rest.issues.addLabels({
                       repo: context.repo.repo,
                       owner: context.repo.owner,
                       issue_number: context.issue.number,
