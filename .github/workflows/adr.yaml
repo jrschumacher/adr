@@ -159,7 +159,7 @@ jobs:
       with:
         script: |
           const stateDraft = 'draft'
-          const statePendingApproval = 'pending approval'
+          const statePendingApproval = 'pending-approval'
           const stateAccepted = 'accepted'
           const stateRejected = 'rejected'
           const stateDeprecated = 'deprecated'
