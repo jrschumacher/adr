@@ -196,7 +196,7 @@ jobs:
           )
 
           async function updateState(commentId, status, deciders, approvals, rejections) {
-            console.log('Updating state')
+            console.log(`Updating state for ${commentId}`, status, deciders, approvals, rejections)
             return ghUpdateComment(commentId, 
               `<details><summary>ℹ️ ADR Status: ${status}</summary>`,
               '',
@@ -289,7 +289,7 @@ jobs:
               nextStatus = statePending
             }
 
-            updateState(state.commentId, nextStatus, nextDeciders, nextApprovals, nextRejections)
+            await updateState(state.commentId, nextStatus, nextDeciders, nextApprovals, nextRejections)
           }
           
           console.log('Processing command', commentBody)
