@@ -178,166 +178,166 @@ jobs:
           const ghUpdateComment = (comment_id, ...msg) => github.rest.issues.updateComment({
             repo: context.repo.repo,
             owner: context.repo.owner,
-  issue_number: context.issue.number,
-  comment_id,
-  body: fmtMessage(...msg),
-})
+            issue_number: context.issue.number,
+            comment_id,
+            body: fmtMessage(...msg),
+          })
 
-const errComment = (summary, ...detail) => ghComment(
-  `<details><summary>❗ @${github.actor} ${summary}</summary>`,
-  ...detail,
-  `</details>`,
-)
+          const errComment = (summary, ...detail) => ghComment(
+            `<details><summary>❗ @${github.actor} ${summary}</summary>`,
+            ...detail,
+            `</details>`,
+          )
 
-async function updateState(commentId, status, deciders, approvals, rejections) {
-  console.log('Updating state')
-  return ghUpdateComment(commentId, 
-    `<details><summary>ℹ️ ADR Status: ${status}</summary>`,
-    '',
-    '```',
-    `deciders: ${deciders.join(' ')}`,
-    `approvals: ${approvals.join(' ')}`,
-    `rejections: ${rejections.join(' ')}`,
-    `status: ${status}`,
-    '```',
-    '',
-    `</details>`
-  )
-}
+          async function updateState(commentId, status, deciders, approvals, rejections) {
+            console.log('Updating state')
+            return ghUpdateComment(commentId, 
+              `<details><summary>ℹ️ ADR Status: ${status}</summary>`,
+              '',
+              '```',
+              `deciders: ${deciders.join(' ')}`,
+              `approvals: ${approvals.join(' ')}`,
+              `rejections: ${rejections.join(' ')}`,
+              `status: ${status}`,
+              '```',
+              '',
+              `</details>`
+            )
+          }
 
-async function getState() {
-  let comment = null
-  let deciders = []
-  let approvals = []
-  let rejections = []
-  let status = ''
+          async function getState() {
+            let comment = null
+            let deciders = []
+            let approvals = []
+            let rejections = []
+            let status = ''
 
-  console.log('Finding status comment')
-  // TODO: Support pagination of the GH comments
-  comment = await github.rest.issues.listComments({
-    repo: context.repo.repo,
-    owner: context.repo.owner,
-    issue_number: context.issue.number,
-    per_page: 100, // max
-  }).data.find(c =>
-    c.user.login == 'github-actions[bot]' &&
-    c.body.startsWith('<detail><summary>ℹ️ ADR Status')
-  )
+            console.log('Finding status comment')
+            // TODO: Support pagination of the GH comments
+            comment = await github.rest.issues.listComments({
+              repo: context.repo.repo,
+              owner: context.repo.owner,
+              issue_number: context.issue.number,
+              per_page: 100, // max
+            }).data.find(c =>
+              c.user.login == 'github-actions[bot]' &&
+              c.body.startsWith('<detail><summary>ℹ️ ADR Status')
+            )
 
-  if (!comment) throw new Error('No state comment found')
+            if (!comment) throw new Error('No state comment found')
 
-  console.log('Found state comment', comment.id)
-  [deciders, approvals, rejections, status] = comment.body
-    .split('```')[1]
-    .trim()
-    .split('\n')
-    .map(l =>
-      l.split(':')[1]
-        .trim('')
-        .split(' ')
-    )
-  return { commentId: comment.id, deciders, approvals, rejections, status }
-}
+            console.log('Found state comment', comment.id)
+            [deciders, approvals, rejections, status] = comment.body
+              .split('```')[1]
+              .trim()
+              .split('\n')
+              .map(l =>
+                l.split(':')[1]
+                  .trim('')
+                  .split(' ')
+              )
+            return { commentId: comment.id, deciders, approvals, rejections, status }
+          }
 
-async function updateStatus(status, params) {
-  console.log('Updating state comment')
-  let state = {};
-  try {
-    state = await getState(comment.body)
-  } catch (e) {
-    console.error('Error getting state', e)
-    return
-  }
+          async function updateStatus(status, params) {
+            console.log('Updating state comment')
+            let state = {};
+            try {
+              state = await getState(comment.body)
+            } catch (e) {
+              console.error('Error getting state', e)
+              return
+            }
 
-  switch (status) {
-    case statePending:
-      const currDeciders = new Set(deciders.split(' '))
-      if (Array.isArray(params.decider)) {
-        params.deciders.map(decider => currDeciders.add(decider))
-        nextDeciders = Array.from(currDeciders).join(' ')
-        nextApprovals = params.approvals.join(' ')
-        nextRejections = params.rejections.join(' ')
-      }
-      break
-    case stateAccepted:
-      const currApprovals = new Set(approvals.split(' '))
-      if (Array.isArray(params.approver)) {
-        params.approver.map(approver => currApprovals.add(approver))
-        nextApprovals = Array.from(currApprovals).join(' ')
-      }
-      break
-    case stateRejected:
-      const currRejections = new Set(rejections.split(' '))
-      if (Array.isArray(params.rejector)) {
-        params.rejector.map(rejector => currRejections.add(rejector))
-        nextRejections = Array.from(currRejections).join(' ')
-      }
-      break
-  }
+            switch (status) {
+              case statePending:
+                const currDeciders = new Set(deciders.split(' '))
+                if (Array.isArray(params.decider)) {
+                  params.deciders.map(decider => currDeciders.add(decider))
+                  nextDeciders = Array.from(currDeciders).join(' ')
+                  nextApprovals = params.approvals.join(' ')
+                  nextRejections = params.rejections.join(' ')
+                }
+                break
+              case stateAccepted:
+                const currApprovals = new Set(approvals.split(' '))
+                if (Array.isArray(params.approver)) {
+                  params.approver.map(approver => currApprovals.add(approver))
+                  nextApprovals = Array.from(currApprovals).join(' ')
+                }
+                break
+              case stateRejected:
+                const currRejections = new Set(rejections.split(' '))
+                if (Array.isArray(params.rejector)) {
+                  params.rejector.map(rejector => currRejections.add(rejector))
+                  nextRejections = Array.from(currRejections).join(' ')
+                }
+                break
+            }
 
-  if (approvals.length == deciders.length) {
-    nextStatus = stateAccepted
-  } else if (rejections.length == deciders.length) {
-    nextStatus = stateRejected
-  } else {
-    nextStatus = statePending
-  }
+            if (approvals.length == deciders.length) {
+              nextStatus = stateAccepted
+            } else if (rejections.length == deciders.length) {
+              nextStatus = stateRejected
+            } else {
+              nextStatus = statePending
+            }
 
-  updateState(state.commentId, nextStatus, nextDeciders, nextApprovals, nextRejections)
-}
+            updateState(state.commentId, nextStatus, nextDeciders, nextApprovals, nextRejections)
+          }
 
-// adr cmd [params]
-const reCmd = new RegExp(`^${cmdPrefix} ([^ ]+)((?: [^ ]+)*)?`);
-const cmdComment = context.event?.comment?.body?.trim().match(reCmd)
-// Bail if comment is empty
-if (!cmdComment) return
-let [_, cmd, params] = cmdComment
-params = params?.trim().split(' ') || []
+          // adr cmd [params]
+          const reCmd = new RegExp(`^${cmdPrefix} ([^ ]+)((?: [^ ]+)*)?`);
+          const cmdComment = context.event?.comment?.body?.trim().match(reCmd)
+          // Bail if comment is empty
+          if (!cmdComment) return
+          let [_, cmd, params] = cmdComment
+          params = params?.trim().split(' ') || []
 
-switch (cmd) {
-  case cmdRequestApproval:
-    console.log('Requesting approval')
-    if (params.length === 0) return errComment(
-      'Please specify at least one user to request approval from.',
-      `Example: \`${cmdPrefix} ${cmdRequestApproval} @user1 @user2\``,
-    )
+          switch (cmd) {
+            case cmdRequestApproval:
+              console.log('Requesting approval')
+              if (params.length === 0) return errComment(
+                'Please specify at least one user to request approval from.',
+                `Example: \`${cmdPrefix} ${cmdRequestApproval} @user1 @user2\``,
+              )
 
-    const invalid = params.filter(p => !p.match(validUsername))
-    if (invalid.length > 0) return errComment(
-      `Invalid username(s) in request: ${invalid.join(' ')}`,
-      'Valid usernames must start with `@` and contain only alphanumeric characters or hyphens, and cannot end with a hyphen.',
-    )
+              const invalid = params.filter(p => !p.match(validUsername))
+              if (invalid.length > 0) return errComment(
+                `Invalid username(s) in request: ${invalid.join(' ')}`,
+                'Valid usernames must start with `@` and contain only alphanumeric characters or hyphens, and cannot end with a hyphen.',
+              )
 
-    updateStatus(statePending, { deciders: usernames, approvals: [], rejections: [] })
+              updateStatus(statePending, { deciders: usernames, approvals: [], rejections: [] })
 
-    ghComment(fmtMessage(
-      `@${usernames.join(' ')} Please review this ADR.`,
-      '',
-      '---',
-      '',
-      '- 👍 To **approve** this ADR, comment:',
-      `  - \`${cmdPrefix} ${cmdReject}\``,
-      '- 👎 To **reject** this ADR, comment:',
-      `  - \`${cmdPrefix} ${cmdReject}\``,
-    ))
-    break
-  case cmdApprove:
-    console.log('Approving')
-    updateStatus(stateAccepted, { approver: github.actor })
-    break
-  case cmdReject:
-    console.log('Rejecting')
-    updateStatus(stateRejected, { rejector: github.actor })
-    break
-  default:
-    console.log('Unknown command')
-    errComment(
-      `Unknown command \`${cmd}\`.`,
-      `Unknown command: \`${comment}\``,
-      `Please use one of the following commands:`,
-      `- \`${cmdPrefix} ${cmdRequestApproval} @user1 @user2\``,
-      `- \`${cmdPrefix} ${cmdApprove}\``,
-      `- \`${cmdPrefix} ${cmdReject}\``,
-    )
-    break
-}
+              ghComment(fmtMessage(
+                `@${usernames.join(' ')} Please review this ADR.`,
+                '',
+                '---',
+                '',
+                '- 👍 To **approve** this ADR, comment:',
+                `  - \`${cmdPrefix} ${cmdReject}\``,
+                '- 👎 To **reject** this ADR, comment:',
+                `  - \`${cmdPrefix} ${cmdReject}\``,
+              ))
+              break
+            case cmdApprove:
+              console.log('Approving')
+              updateStatus(stateAccepted, { approver: github.actor })
+              break
+            case cmdReject:
+              console.log('Rejecting')
+              updateStatus(stateRejected, { rejector: github.actor })
+              break
+            default:
+              console.log('Unknown command')
+              errComment(
+                `Unknown command \`${cmd}\`.`,
+                `Unknown command: \`${comment}\``,
+                `Please use one of the following commands:`,
+                `- \`${cmdPrefix} ${cmdRequestApproval} @user1 @user2\``,
+                `- \`${cmdPrefix} ${cmdApprove}\``,
+                `- \`${cmdPrefix} ${cmdReject}\``,
+              )
+              break
+          }
