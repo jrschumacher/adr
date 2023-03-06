@@ -338,8 +338,8 @@ jobs:
               d: [...deciders],
               as: approvals.size,
               a: [...approvals],
-              a_all: [...deciders].reduce((p, c) => p && approvals.has(c), false),
-              r_all: [...deciders].reduce((p, c) => p && rejections.has(c), false)
+              a_all: [...deciders].every(i => approvals.has(i)),
+              r_all: [...deciders].every(i => rejections.has(i))
             })
 
             // Calculate status
@@ -349,13 +349,13 @@ jobs:
             } else if (
               rejections.size === 0 &&
               deciders.size === approvals.size &&
-              [...deciders].reduce((p, c) => p && approvals.has(c), false)
+              [...deciders].every(i => approvals.has(i))
             ) {
               nextStatus = stateAccepted
             } else if (
               approvals.size === 0 &&
               deciders.size === rejections.size &&
-              [...deciders].reduce((p, c) => p && rejections.has(c), false)
+              [...deciders].every(i => rejections.has(i))
             ) {
               nextStatus = stateRejected
             }
