@@ -316,10 +316,10 @@ jobs:
                 'Valid usernames must start with `@` and contain only alphanumeric characters or hyphens, and cannot end with a hyphen.',
               )
 
-              updateStatus(statePending, { deciders: usernames, approvals: [], rejections: [] })
+              updateStatus(statePending, { deciders: params, approvals: [], rejections: [] })
 
               ghComment(fmtMessage(
-                `@${usernames.join(' ')} Please review this ADR.`,
+                `@${params.join(' ')} Please review this ADR.`,
                 '',
                 '---',
                 '',
