@@ -167,6 +167,8 @@ jobs:
 
           const cmdPrefix = 'adr'
           const cmdRequestApproval = 'request-approval'
+          const cmdAddDecider = 'add-decider'
+          const cmdRemoveDecider = 'remove-decider'
           const cmdAccept = 'accept'
           const cmdReject = 'reject'
 
@@ -329,8 +331,17 @@ jobs:
             const rejections = new Set(state.rejections)
 
             switch (status) {
-              case statePendingApproval:
-                if (Array.isArray(params.deciders)) params.deciders.forEach(decider => deciders.add(decider))
+              case cmdAddDecider:
+              case cmdRequestApproval:
+                if (cmdRequestApproval) {
+                  deciders.clear()
+                  approvals.clear()
+                  rejections.clear()
+                }
+                params.deciders.forEach(decider => deciders.add(decider))
+                break
+              case cmdRemoveDecider:
+                params.deciders.forEach(decider => deciders.delete(decider))
                 break
               case stateAccepted:
                 if (deciders.has(actor)) {
@@ -370,6 +381,8 @@ jobs:
 
           console.log(`Processing command from ${commentActor}`, cmd, params)
           switch (cmd) {
+            case cmdAddDecider:
+            case cmdRemoveDecider:
             case cmdRequestApproval:
               console.log('Requesting approval')
               if (params.length === 0) return errComment(
@@ -383,7 +396,7 @@ jobs:
                 'Valid usernames must start with `@` and contain only alphanumeric characters or hyphens, and cannot end with a hyphen.',
               )
 
-              updateStatus(statePendingApproval, { deciders: params, approvals: [], rejections: [] })
+              updateStatus(cmd, { deciders: params, approvals: [], rejections: [] })
 
               ghComment(fmtMessage(
                 `${params.join(' ')} Please review this ADR.`,
@@ -409,10 +422,17 @@ jobs:
               errComment(
                 `Unknown command \`${cmd}\`.`,
                 `Unknown command: \`${commentBody}\``,
-                `Please use one of the following commands:`,
-                `- \`${cmdPrefix} ${cmdRequestApproval} @user1 @user2\``,
-                `- \`${cmdPrefix} ${cmdAccept}\``,
-                `- \`${cmdPrefix} ${cmdReject}\``,
+                '',
+                '---',
+                '',
+                'Author actions:',
+                `- Request approval (reset state) \`${cmdPrefix} ${cmdRequestApproval} @user1 @user2\``,
+                `- Add decider(s) \`${cmdPrefix} ${cmdAddDecider}\``,
+                `- Remove decider(s) \`${cmdPrefix} ${cmdRemoveDecider}\``,
+                '',
+                'Decider actions:',
+                `- Accept the ADR \`${cmdPrefix} ${cmdAccept}\``,
+                `- Reject the ADR \`${cmdPrefix} ${cmdReject}\``,
               )
               break
           }
