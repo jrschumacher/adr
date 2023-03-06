@@ -338,7 +338,7 @@ jobs:
               console.log('Unknown command')
               errComment(
                 `Unknown command \`${cmd}\`.`,
-                `Unknown command: \`${comment}\``,
+                `Unknown command: \`${commentBody}\``,
                 `Please use one of the following commands:`,
                 `- \`${cmdPrefix} ${cmdRequestApproval} @user1 @user2\``,
                 `- \`${cmdPrefix} ${cmdApprove}\``,
