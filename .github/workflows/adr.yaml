@@ -58,11 +58,11 @@ jobs:
               {
                 name: 'adr:pending-approval', 
                 description: 'ADR is pending approval',
-                color: '1D76DB'
+                color: '5319E7'
               },
               {
-                name: 'adr:approved', 
-                description: 'ADR has been approved',
+                name: 'adr:accepted', 
+                description: 'ADR has been accepted',
                 color: '0E8A16'
               },
               {
@@ -167,7 +167,7 @@ jobs:
 
           const cmdPrefix = 'adr'
           const cmdRequestApproval = 'request-approval'
-          const cmdApprove = 'approve'
+          const cmdAccept = 'accept'
           const cmdReject = 'reject'
 
           const validUsername = '@[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}'
@@ -390,13 +390,13 @@ jobs:
                 '',
                 '---',
                 '',
-                '- 👍 To **approve** this ADR, comment:',
-                `  - \`${cmdPrefix} ${cmdApprove}\``,
-                '- 👎 To **reject** this ADR, comment:',
+                `- 👍 To **${cmdAccept}** this ADR, comment:`,
+                `  - \`${cmdPrefix} ${cmdAccept}\``,
+                `- 👎 To **${cmdReject}** this ADR, comment:`,
                 `  - \`${cmdPrefix} ${cmdReject}\``,
               ))
               break
-            case cmdApprove:
+            case cmdAccept:
               console.log('Approving')
               updateStatus(stateAccepted, { actor: commentActor })
               break
@@ -411,7 +411,7 @@ jobs:
                 `Unknown command: \`${commentBody}\``,
                 `Please use one of the following commands:`,
                 `- \`${cmdPrefix} ${cmdRequestApproval} @user1 @user2\``,
-                `- \`${cmdPrefix} ${cmdApprove}\``,
+                `- \`${cmdPrefix} ${cmdAccept}\``,
                 `- \`${cmdPrefix} ${cmdReject}\``,
               )
               break
