@@ -340,8 +340,8 @@ jobs:
               d: [...deciders],
               as: approvals.size,
               a: [...approvals],
-              a_all: [...deciders].every(i => approvals.has(i)),
-              r_all: [...deciders].every(i => rejections.has(i)),
+              a_all: eqSet(deciders, approvals),
+              r_all: eqSet(deciders, rejections),
               accept: rejections.size === 0 && eqSet(deciders, approvals),
               reject: approvals.size === 0 && eqSet(deciders, rejections),
             })
