@@ -188,7 +188,9 @@ jobs:
 
           const errComment = (summary, ...detail) => ghComment(
             `<details><summary>❗ @${commentActor} ${summary}</summary>`,
+            '',
             '---',
+            '',
             ...detail,
             `</details>`,
           )
