@@ -208,39 +208,22 @@ jobs:
 
           async function updateState(commentId, status, deciders, approvals, rejections) {
             console.log(`Updating state for ${commentId}`, status, deciders, approvals, rejections)
-            const statusLabel = `${labelPrefix}:${status}`
 
-            // update labels
+            // Get existing labels
             let existingLabels = await github.rest.issues.listLabelsOnIssue({
               repo: context.repo.repo,
               owner: context.repo.owner,
               issue_number: context.issue.number,
             })
+            
+            // Filter out status labels
+            let nextLabels = existingLabels.data
+                .map(l => l.name)
+                .filter(l => l.startsWith(`${cmdPrefix}:`))
+            // Add new status label
+            nextLabels.push(`${labelPrefix}:${status}`)
 
-            existingLabels = existingLabels.data.map(l => l.name)
-
-            // Clean up the labels
-            const adrLabels = existingLabels.data
-              .filter(l => l.name.startsWith(`${cmdPrefix}:`))
-              .forEach(async l => {
-                if (l.name !== statusLabel) {
-                  await github.rest.issues.removeLabel({
-                    repo: context.repo.repo,
-                    owner: context.repo.owner,
-                    issue_number: context.issue.number,
-                    name: l.name,
-                  })
-                }
-              })
-
-            // update labels
-            await github.rest.issues.addLabels({
-              repo: context.repo.repo,
-              owner: context.repo.owner,
-              issue_number: context.issue.number,
-              labels: [labelPrefix, statusLabel],
-            })
-
+            // Update status comment
             ghUpdateComment(commentId,
               `<details><summary>ℹ️ ADR Status: ${status}</summary>`,
               '',
@@ -256,13 +239,14 @@ jobs:
 
             // TODO: Create commit
 
+            // Update status and close if needed
             github.rest.issues.update({
               repo: context.repo.repo,
               owner: context.repo.owner,
               issue_number: context.issue.number,
+              labels: nextLabels,
               state: status === stateAccepted || status === stateRejected ? 'closed' : 'open',
-              labels: [cmdPrefix, statusLabel],
-              state_reason: `ADR has been ${status}`
+              state_reason: `ADR has been ${status}`,
             })
           }
 
@@ -368,7 +352,9 @@ jobs:
 
             await updateState(state.commentId, nextStatus, deciders, approvals, rejections)
           }
-
+          
+          ////////// MAIN
+          
           console.log('Processing command', commentBody)
           // adr cmd [params]
           const reCmd = new RegExp(`^${cmdPrefix} ([^ ]+)((?: [^ ]+)*)?`);
@@ -377,6 +363,11 @@ jobs:
           if (!cmdComment) return errComment('No command found')
           let [_, cmd, params] = cmdComment
           params = params?.trim().split(' ') || []
+          
+          // Handle closed issues
+          if (context.issue.status === 'closed') {
+            return errComment('This ADR is closed, any further changes will need to be made via commits.')
+          }
 
           console.log(`Processing command from ${commentActor}`, cmd, params)
           switch (cmd) {
