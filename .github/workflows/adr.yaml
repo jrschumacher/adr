@@ -330,6 +330,14 @@ jobs:
                 }
                 break
             }
+            
+            console.log('Calculate status', {
+              rs: rejections.size,
+              ds: deciders.size,
+              as: approvals.size,
+              a_all: [...deciders].reduce((p, c) => p && approvals.has(c), false),
+              r_all: [...deciders].reduce((p, c) => p && rejections.has(c), false)
+            })
 
             // Calculate status
             nextStatus = statePendingApproval
