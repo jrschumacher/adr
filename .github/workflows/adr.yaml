@@ -174,6 +174,8 @@ jobs:
 
           const commentBody = context.payload.comment.body
           const commentActor = context.payload.comment.user.login
+          
+          const eqSet = (a, b) => a.size === 0 && b.size === 0 && [...a].every(i => b.has(i))
 
           const fmtMessage = (...msg) => msg.map(l => typeof l == 'string' && l || '').join("\n")
 
@@ -346,17 +348,9 @@ jobs:
             nextStatus = statePendingApproval
             if (deciders.size === 0) {
               nextStatus = stateDraft
-            } else if (
-              rejections.size === 0 &&
-              deciders.size === approvals.size &&
-              [...deciders].every(i => approvals.has(i))
-            ) {
+            } else if (rejections.size === 0 && eqSet(deciders, approvals)) {
               nextStatus = stateAccepted
-            } else if (
-              approvals.size === 0 &&
-              deciders.size === rejections.size &&
-              [...deciders].every(i => rejections.has(i))
-            ) {
+            } else if (approvals.size === 0 && eqSet(deciders, rejections)) {
               nextStatus = stateRejected
             }
 
