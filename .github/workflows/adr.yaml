@@ -165,6 +165,9 @@ jobs:
           const cmdReject = 'reject'
 
           const validUsername = '@[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}'
+          
+          const commentBody = context.event.issue_comment.comment.body
+          const commentActor = context.event.issue_comment.comment.user.login
 
           const fmtMessage = (...msg) => msg.map(l => typeof l == 'string' && l || '').join('/n')
 
@@ -184,7 +187,7 @@ jobs:
           })
 
           const errComment = (summary, ...detail) => ghComment(
-            `<details><summary>❗ @${github.actor} ${summary}</summary>`,
+            `<details><summary>❗ @${commentActor} ${summary}</summary>`,
             ...detail,
             `</details>`,
           )
@@ -285,8 +288,7 @@ jobs:
 
             updateState(state.commentId, nextStatus, nextDeciders, nextApprovals, nextRejections)
           }
-
-          const commentBody = context.evnet.issue_comment.comment.body
+          
           console.log('Processing command', commentBody)
           // adr cmd [params]
           const reCmd = new RegExp(`^${cmdPrefix} ([^ ]+)((?: [^ ]+)*)?`);
