@@ -238,6 +238,16 @@ jobs:
             )
 
             // TODO: Create commit
+            
+            let issueState = 'open'
+            let issueStateReason = null
+            if (status === stateAccepted) {
+              issueState = 'closed'
+              issueStateReason = 'complete'
+            } else if (status === stateRejected) {
+              issueState = 'closed'
+              issueStateReason = 'not_planned'
+            }
 
             // Update status and close if needed
             github.rest.issues.update({
@@ -245,8 +255,8 @@ jobs:
               owner: context.repo.owner,
               issue_number: context.issue.number,
               labels: nextLabels,
-              state: status === stateAccepted || status === stateRejected ? 'closed' : 'open',
-              state_reason: status === stateAccepted ? 'complete' : 'not-planned',
+              state: issueState,
+              state_reason: issueStateReason,
             })
           }
 
