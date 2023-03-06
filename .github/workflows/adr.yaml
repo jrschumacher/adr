@@ -341,7 +341,9 @@ jobs:
               as: approvals.size,
               a: [...approvals],
               a_all: [...deciders].every(i => approvals.has(i)),
-              r_all: [...deciders].every(i => rejections.has(i))
+              r_all: [...deciders].every(i => rejections.has(i)),
+              accept: rejections.size === 0 && eqSet(deciders, approvals),
+              reject: approvals.size === 0 && eqSet(deciders, rejections),
             })
 
             // Calculate status
