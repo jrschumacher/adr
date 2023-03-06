@@ -250,6 +250,19 @@ jobs:
               '',
               `</details>`
             )
+            
+            // Check if should commit and lock
+            if (status === stateAccepted || status === stateRejected) {
+              // TODO: Create commit
+              
+              github.rest.issues.update({
+                repo: context.repo.repo,
+                owner: context.repo.owner,
+                issue_number: context.issue.number,
+                state: 'closed',
+                state_reason: `ADR has been ${status}`
+              })
+            }
           }
 
           async function getState() {
@@ -332,19 +345,6 @@ jobs:
                 }
                 break
             }
-            
-            console.log('Calculate status', {
-              rs: rejections.size,
-              r: [...rejections],
-              ds: deciders.size,
-              d: [...deciders],
-              as: approvals.size,
-              a: [...approvals],
-              a_all: eqSet(deciders, approvals),
-              r_all: eqSet(deciders, rejections),
-              accept: rejections.size === 0 && eqSet(deciders, approvals),
-              reject: approvals.size === 0 && eqSet(deciders, rejections),
-            })
 
             // Calculate status
             nextStatus = statePendingApproval
