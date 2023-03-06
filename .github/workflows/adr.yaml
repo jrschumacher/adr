@@ -237,8 +237,8 @@ jobs:
               throw new Error('Could not find state comment')
             }
 
-            console.log('Found state comment', comment.id, comment.body)
-            [deciders, approvals, rejections, status] = comment.body
+            console.log('Found state comment', comment.id)
+            const state = comment.body
               .split('```')[1]
               .trim()
               .split('\n')
@@ -246,6 +246,8 @@ jobs:
                 l.split(':')[1]
                   .trim('')
               )
+              
+            deciders, approvals, rejections, status = ...state
             return {
               commentId: comment.id,
               deciders: deciders.split(' '),
