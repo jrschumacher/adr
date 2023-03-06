@@ -270,7 +270,7 @@ jobs:
             }
 
             switch (status) {
-              case statePending:
+              case statePendingApproval:
                 const currDeciders = new Set(deciders.split(' '))
                 if (Array.isArray(params.deciders)) {
                   params.deciders.map(decider => currDeciders.add(decider))
@@ -300,7 +300,7 @@ jobs:
             } else if (rejections.length == deciders.length) {
               nextStatus = stateRejected
             } else {
-              nextStatus = statePending
+              nextStatus = statePendingApproval
             }
 
             await updateState(state.commentId, nextStatus, nextDeciders, nextApprovals, nextRejections)
@@ -330,7 +330,7 @@ jobs:
                 'Valid usernames must start with `@` and contain only alphanumeric characters or hyphens, and cannot end with a hyphen.',
               )
 
-              updateStatus(statePending, { deciders: params, approvals: [], rejections: [] })
+              updateStatus(statePendingApproval, { deciders: params, approvals: [], rejections: [] })
 
               ghComment(fmtMessage(
                 `${params.join(' ')} Please review this ADR.`,
