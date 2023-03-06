@@ -219,7 +219,7 @@ jobs:
             // Filter out status labels
             let nextLabels = existingLabels.data
                 .map(l => l.name)
-                .filter(l => l.startsWith(`${cmdPrefix}:`))
+                .filter(l => !l.startsWith(`${cmdPrefix}:`))
             // Add new status label
             nextLabels.push(`${labelPrefix}:${status}`)
 
