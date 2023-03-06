@@ -56,6 +56,11 @@ jobs:
                 color: 'FBCA04'
               },
               {
+                name: 'adr:pending-approval', 
+                description: 'ADR is pending approval',
+                color: '1D76DB'
+              },
+              {
                 name: 'adr:approved', 
                 description: 'ADR has been approved',
                 color: '0E8A16'
