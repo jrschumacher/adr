@@ -227,7 +227,7 @@ jobs:
               per_page: 100, // max
             })
             if (!comments || !Array.isArray(comments)) {
-              console.error('Could not get issue comments', err)
+              console.error('Could not get issue comments', comments)
               throw new Error('Could not get issue comments')
             }
             
