@@ -318,11 +318,11 @@ jobs:
                 break
               case stateAccepted:
                 approvals.add(params.actor)
-                rejections.remove(params.actor)
+                rejections.delete(params.actor)
                 break
               case stateRejected:
                 rejections.add(params.actor)
-                approvals.remove(params.actor)
+                approvals.delete(params.actor)
                 break
             }
 
