@@ -247,7 +247,7 @@ jobs:
                   .trim('')
               )
               
-            deciders, approvals, rejections, status = ...state
+            [deciders, approvals, rejections, status] = state
             return {
               commentId: comment.id,
               deciders: deciders.split(' '),
