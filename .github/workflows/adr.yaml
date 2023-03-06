@@ -24,7 +24,7 @@ on:
         default: 'warning'
         type: choice
         options: [init]
-  issue_comment: 1
+  issue_comment:
     types: [created]
   issues:
     types: [opened]
