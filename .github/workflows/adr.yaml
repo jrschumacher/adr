@@ -242,18 +242,23 @@ jobs:
               .split('```')[1]
               .trim()
               .split('\n')
-              .map(l =>
-                l.split(':')[1]
-                  .trim('')
-              )
+              .reduce((prv, cur) => {
+                const [key, val] = l.split(':').map(s => s.trim())
+                prev[key.toLowerCase()] = val
+              }, {
+                deciders: [],
+                approvals: [],
+                rejections: [],
+                state: ''
+              })
           
             console.log('Extracted state', state)
             return {
               commentId: comment.id,
-              deciders: state[0].split(' '),
-              approvals: state[1].split(' '),
-              rejections: state[2].split(' '),
-              state[3]
+              deciders: state.deciders.split(' '),
+              approvals: state.approvals.split(' '),
+              rejections: state.rejections.split(' '),
+              state.status
             }
           }
 
