@@ -260,7 +260,7 @@ jobs:
           }
 
           async function updateStatus(status, params) {
-            console.log('Updating state comment')
+            console.log('Updating state comment', status, params)
             let state = {};
             try {
               state = await getState()
@@ -268,42 +268,42 @@ jobs:
               console.error('Error getting state', e)
               return
             }
+            
+            const currDeciders = new Set(state.deciders)
+            const currApprovals = new Set(state.approvals)
+            const currRejections = new Set(state.rejections)
 
             switch (status) {
               case statePendingApproval:
-                const currDeciders = new Set(deciders.split(' '))
-                if (Array.isArray(params.deciders)) {
-                  params.deciders.map(decider => currDeciders.add(decider))
-                  nextDeciders = Array.from(currDeciders).join(' ')
-                  nextApprovals = params.approvals.join(' ')
-                  nextRejections = params.rejections.join(' ')
-                }
+                if (Array.isArray(params.deciders)) params.deciders.forEach(decider => currDeciders.add(decider))
                 break
               case stateAccepted:
-                const currApprovals = new Set(approvals.split(' '))
-                if (Array.isArray(params.approver)) {
-                  params.approver.map(approver => currApprovals.add(approver))
-                  nextApprovals = Array.from(currApprovals).join(' ')
-                }
+                currApprovals.add(params.actor)
+                currRejections.remove(params.actor)
                 break
               case stateRejected:
-                const currRejections = new Set(rejections.split(' '))
-                if (Array.isArray(params.rejector)) {
-                  params.rejector.map(rejector => currRejections.add(rejector))
-                  nextRejections = Array.from(currRejections).join(' ')
-                }
+                currRejections.add(params.actor)
+                currApprovals.remove(params.actor)
                 break
             }
 
-            if (approvals.length == deciders.length) {
+            // Calculate status
+            nextStatus = statePendingApproval
+            if (
+              currRejections.size === 0 &&
+              currDeciders.size === currApprovals.size &&
+              [...currDeciders].reduce((p, c) => p && currApprovals.has(c), false)
+            ) {
               nextStatus = stateAccepted
-            } else if (rejections.length == deciders.length) {
+            } else if (
+              currApprovals.size === 0 &&
+              currDeciders.size === currRejections.size &&
+              [...currDeciders].reduce((p, c) => p && currApprovals.has(c), false)
+            ) {
               nextStatus = stateRejected
-            } else {
-              nextStatus = statePendingApproval
             }
-
-            await updateState(state.commentId, nextStatus, nextDeciders, nextApprovals, nextRejections)
+            
+            await updateState(state.commentId, nextStatus, nextDeciders, Array.from(currRejections).join(' '), nextRejections)
           }
 
           console.log('Processing command', commentBody)
@@ -345,11 +345,11 @@ jobs:
               break
             case cmdApprove:
               console.log('Approving')
-              updateStatus(stateAccepted, { approver: commentActor })
+              updateStatus(stateAccepted, { actor: commentActor })
               break
             case cmdReject:
               console.log('Rejecting')
-              updateStatus(stateRejected, { rejector: commentActor })
+              updateStatus(stateRejected, { actor: commentActor })
               break
             default:
               console.log('Unknown command')
