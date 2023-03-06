@@ -203,6 +203,7 @@ jobs:
 
           async function updateState(commentId, status, deciders, approvals, rejections) {
             console.log(`Updating state for ${commentId}`, status, deciders, approvals, rejections)
+            const statusLabel = `${cmdPrefix}:${status}`
 
             // update labels
             const existingLabels = await github.rest.issues.listLabelsOnIssue({
@@ -216,19 +217,12 @@ jobs:
               const adrLabels = existingLabels.data
                 .filter(l => l.name.startsWith(`${cmdPrefix}:`))
                 .forEach(async l => {
-                  if (l.name !== `${cmdPrefix}:${status}`) {
+                  if (l.name !== statusLabel) {
                     await github.rest.issues.removeLabel({
                       repo: context.repo.repo,
                       owner: context.repo.owner,
                       issue_number: context.issue.number,
                       name: l.name,
-                    })
-
-                    await github.rest.issues.addLabels({
-                      repo: context.repo.repo,
-                      owner: context.repo.owner,
-                      issue_number: context.issue.number,
-                      labels: [l.name]
                     })
                   }
                 })
@@ -239,7 +233,7 @@ jobs:
               repo: context.repo.repo,
               owner: context.repo.owner,
               issue_number: context.issue.number,
-              labels: [status],
+              labels: [statusLabel],
             })
 
             ghUpdateComment(commentId,
