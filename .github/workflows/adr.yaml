@@ -300,6 +300,7 @@ jobs:
 
           async function updateStatus(status, params) {
             console.log('Updating state comment', status, params)
+            const actor = `@${params.actor}`
             let state = {};
             try {
               state = await getState()
@@ -317,12 +318,16 @@ jobs:
                 if (Array.isArray(params.deciders)) params.deciders.forEach(decider => deciders.add(decider))
                 break
               case stateAccepted:
-                approvals.add(params.actor)
-                rejections.delete(params.actor)
+                if (deciders.has(actor)) {
+                  approvals.add(actor)
+                  rejections.delete(actor)
+                }
                 break
               case stateRejected:
-                rejections.add(params.actor)
-                approvals.delete(params.actor)
+                if (deciders.has(actor)) {
+                  rejections.add(actor)
+                  approvals.delete(actor)
+                }
                 break
             }
 
