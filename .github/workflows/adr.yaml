@@ -286,10 +286,11 @@ jobs:
             updateState(state.commentId, nextStatus, nextDeciders, nextApprovals, nextRejections)
           }
 
+          const commentBody = context.evnet.issue_comment.comment.body
+          console.log('Processing command', commentBody)
           // adr cmd [params]
-          console.log('Processing command', context.event?.comment?.body)
           const reCmd = new RegExp(`^${cmdPrefix} ([^ ]+)((?: [^ ]+)*)?`);
-          const cmdComment = context.event?.comment?.body?.trim().match(reCmd)
+          const cmdComment = commentBody?.trim().match(reCmd)
           // Bail if comment is empty
           if (!cmdComment) return errComment('No command found')
           let [_, cmd, params] = cmdComment
