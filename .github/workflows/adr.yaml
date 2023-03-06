@@ -198,13 +198,16 @@ jobs:
 
           async function updateState(commentId, status, deciders, approvals, rejections) {
             console.log(`Updating state for ${commentId}`, status, deciders, approvals, rejections)
+            
+            // TODO: update labels
+            
             return ghUpdateComment(commentId,
               `<details><summary>ℹ️ ADR Status: ${status}</summary>`,
               '',
               '```',
-              `deciders: ${deciders.join(' ')}`,
-              `approvals: ${approvals.join(' ')}`,
-              `rejections: ${rejections.join(' ')}`,
+              `deciders: ${[...deciders].join(' ')}`,
+              `approvals: ${[...approvals].join(' ')}`,
+              `rejections: ${[...rejections].join(' ')}`,
               `status: ${status}`,
               '```',
               '',
