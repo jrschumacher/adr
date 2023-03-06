@@ -149,7 +149,7 @@ jobs:
     
   ## Handle Comment Job
   # Runs when a comment is added
-  handle_comment-request_approval:
+  handle_comment:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'issue_comment' }}
     steps:
