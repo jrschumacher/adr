@@ -211,7 +211,7 @@ jobs:
             const statusLabel = `${labelPrefix}:${status}`
 
             // update labels
-            const existingLabels = await github.rest.issues.listLabelsOnIssue({
+            let existingLabels = await github.rest.issues.listLabelsOnIssue({
               repo: context.repo.repo,
               owner: context.repo.owner,
               issue_number: context.issue.number,
