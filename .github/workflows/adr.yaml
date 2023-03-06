@@ -319,7 +319,7 @@ jobs:
               updateStatus(statePending, { deciders: params, approvals: [], rejections: [] })
 
               ghComment(fmtMessage(
-                `@${params.join(' ')} Please review this ADR.`,
+                `${params.join(' ')} Please review this ADR.`,
                 '',
                 '---',
                 '',
