@@ -333,8 +333,11 @@ jobs:
             
             console.log('Calculate status', {
               rs: rejections.size,
+              r: [...rejections],
               ds: deciders.size,
+              d: [...deciders],
               as: approvals.size,
+              a: [...approvals],
               a_all: [...deciders].reduce((p, c) => p && approvals.has(c), false),
               r_all: [...deciders].reduce((p, c) => p && rejections.has(c), false)
             })
