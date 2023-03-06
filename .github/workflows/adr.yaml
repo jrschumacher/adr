@@ -375,6 +375,7 @@ jobs:
           params = params?.trim().split(' ') || []
           
           // Handle closed issues
+          console.log(context.issue)
           if (context.issue.state === 'closed') {
             return errComment('This ADR is closed, any further changes will need to be made via commits.')
           }
