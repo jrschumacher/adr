@@ -298,7 +298,7 @@ jobs:
           let [_, cmd, params] = cmdComment
           params = params?.trim().split(' ') || []
 
-          console.log(`Processing command from ${github.actor}`, cmd, params)
+          console.log(`Processing command from ${commentActor}`, cmd, params)
           switch (cmd) {
             case cmdRequestApproval:
               console.log('Requesting approval')
@@ -328,11 +328,11 @@ jobs:
               break
             case cmdApprove:
               console.log('Approving')
-              updateStatus(stateAccepted, { approver: github.actor })
+              updateStatus(stateAccepted, { approver: commentActor })
               break
             case cmdReject:
               console.log('Rejecting')
-              updateStatus(stateRejected, { rejector: github.actor })
+              updateStatus(stateRejected, { rejector: commentActor })
               break
             default:
               console.log('Unknown command')
