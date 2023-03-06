@@ -153,6 +153,7 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
+          const stateDraft = 'draft'
           const statePendingApproval = 'pending approval'
           const stateAccepted = 'accepted'
           const stateRejected = 'rejected'
@@ -269,41 +270,43 @@ jobs:
               return
             }
             
-            const currDeciders = new Set(state.deciders)
-            const currApprovals = new Set(state.approvals)
-            const currRejections = new Set(state.rejections)
+            const deciders = new Set(state.deciders)
+            const approvals = new Set(state.approvals)
+            const rejections = new Set(state.rejections)
 
             switch (status) {
               case statePendingApproval:
-                if (Array.isArray(params.deciders)) params.deciders.forEach(decider => currDeciders.add(decider))
+                if (Array.isArray(params.deciders)) params.deciders.forEach(decider => deciders.add(decider))
                 break
               case stateAccepted:
-                currApprovals.add(params.actor)
-                currRejections.remove(params.actor)
+                approvals.add(params.actor)
+                rejections.remove(params.actor)
                 break
               case stateRejected:
-                currRejections.add(params.actor)
-                currApprovals.remove(params.actor)
+                rejections.add(params.actor)
+                approvals.remove(params.actor)
                 break
             }
 
             // Calculate status
             nextStatus = statePendingApproval
-            if (
-              currRejections.size === 0 &&
-              currDeciders.size === currApprovals.size &&
-              [...currDeciders].reduce((p, c) => p && currApprovals.has(c), false)
+            if (deciders.size === 0) {
+              nextStatus = stateDraft
+            } else if (
+              rejections.size === 0 &&
+              deciders.size === approvals.size &&
+              [...deciders].reduce((p, c) => p && approvals.has(c), false)
             ) {
               nextStatus = stateAccepted
             } else if (
-              currApprovals.size === 0 &&
-              currDeciders.size === currRejections.size &&
-              [...currDeciders].reduce((p, c) => p && currApprovals.has(c), false)
+              approvals.size === 0 &&
+              deciders.size === rejections.size &&
+              [...deciders].reduce((p, c) => p && rejections.has(c), false)
             ) {
               nextStatus = stateRejected
             }
             
-            await updateState(state.commentId, nextStatus, nextDeciders, Array.from(currRejections).join(' '), nextRejections)
+            await updateState(state.commentId, nextStatus, deciders, approvals, rejections)
           }
 
           console.log('Processing command', commentBody)
