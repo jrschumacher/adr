@@ -379,7 +379,7 @@ jobs:
                 '---',
                 '',
                 '- 👍 To **approve** this ADR, comment:',
-                `  - \`${cmdPrefix} ${cmdReject}\``,
+                `  - \`${cmdPrefix} ${cmdApprove}\``,
                 '- 👎 To **reject** this ADR, comment:',
                 `  - \`${cmdPrefix} ${cmdReject}\``,
               ))
