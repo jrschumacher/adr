@@ -231,10 +231,7 @@ jobs:
               throw new Error('Could not get issue comments')
             }
             
-            comment = comments.data.find(c =>
-              c.user.login == 'github-actions[bot]' &&
-              c.body.startsWith('<detail><summary>ℹ️ ADR Status')
-            )
+            comment = comments.data.find(c => c.body.startsWith('<details><summary>ℹ️ ADR Status'))
             if (!comment) {
               console.error('Could not find state comment')
               throw new Error('Could not find state comment')
