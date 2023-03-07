@@ -529,7 +529,7 @@ jobs:
           const issue = res.data
 
           // Ensure issue was accepted and closed
-          if (!issue.labels.find(l => l.name === adrAccepted)) {
+          if (!issue.labels.find(l => l.name === stateAccepted)) {
               throw new Error(`Issue ${issueNumber} did not have label ${stateAccepted}`)
           }
 
