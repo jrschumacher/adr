@@ -451,12 +451,12 @@ jobs:
           }
         
     - name: Checkout code
-      if: ${{ steps.handleComment.outputs.commitADR }}
+      if: ${{ env.commitADR }}
       uses: actions/checkout@v3
     
     - name: Add ADR
       id: addAdr
-      if: ${{ steps.handleComment.outputs.commitADR }}
+      if: ${{ env.commitADR }}
       uses: actions/github-script@v6
       with:
         retries: 3
@@ -554,6 +554,7 @@ jobs:
           }
         
     - name: Add & commit
+      if: ${{ env.commitADR }}
       uses: EndBug/add-and-commit@v9
       with:
         author_name: ${{ steps.addAdr.outputs.authorName }}
