@@ -557,8 +557,8 @@ jobs:
       if: ${{ env.commitADR }}
       uses: EndBug/add-and-commit@v9
       with:
-        author_name: ${{ steps.addAdr.outputs.authorName }}
-        author_email: ${{ steps.addAdr.outputs.authorEmail }}
+        author_name: ${{ env.authorName }}
+        author_email: ${{ env.authorEmail }}
         message: 'Committed ADR #${{ inputs.issue_number }}'
         add: 'adr/*'
 
