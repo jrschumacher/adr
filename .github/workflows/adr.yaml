@@ -465,7 +465,7 @@ jobs:
           const crypto = require('crypto')
           const fs = require('fs')
 
-          const adrDir = './adr'
+          const adrDir = './adrs'
           const stateAccepted = 'adr:accepted'
           const adrId = ulid()
           const issueNumber = context.issue.number
