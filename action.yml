@@ -1,0 +1,6 @@
+name: ADR
+author: Ryan Schumacher
+description: Manage ADR pipeline with Github issues
+runs:
+  using: node16
+  main: src/main.js
