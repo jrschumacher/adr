@@ -1,10 +1,5 @@
 name: Basic ADR
-description: |
-  Draft a basic ADR based on the MADR process.
-
-  MADR is a lean template to capture any decisions in a structured way. The template originated
-  from capturing architectural decisions and developed to a template allowing to capture any
-  decisions taken.
+description: Draft a basic ADR based on the MADR process.
 title: "[ADR]: "
 labels:
 - adr
