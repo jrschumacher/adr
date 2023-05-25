@@ -416,9 +416,9 @@ jobs:
                 '',
                 '---',
                 '',
-                `- 👍 To **${cmdAccept}** this ADR, comment:`,
+                `- To **${cmdAccept}** this ADR, comment:`,
                 `  - \`${cmdPrefix} ${cmdAccept}\``,
-                `- 👎 To **${cmdReject}** this ADR, comment:`,
+                `- To **${cmdReject}** this ADR, comment:`,
                 `  - \`${cmdPrefix} ${cmdReject}\``,
               ))
               break
